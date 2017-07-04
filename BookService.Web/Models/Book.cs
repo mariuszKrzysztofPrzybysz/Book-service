@@ -4,6 +4,12 @@ namespace BookService.Web.Models
 {
     public class Book
     {
+        #region Navigation properties
+
+        public Author Author { get; set; }
+
+        #endregion
+
         #region Persisted fields
 
         public int Id { get; set; }
@@ -18,12 +24,6 @@ namespace BookService.Web.Models
         public string Genre { get; set; }
 
         public int AuthorId { get; set; }
-
-        #endregion
-
-        #region Navigation properties
-
-        public Author Author { get; set; }
 
         #endregion
     }

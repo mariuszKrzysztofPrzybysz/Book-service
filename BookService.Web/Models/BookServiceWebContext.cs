@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Web;
+﻿using System.Data.Entity;
 
 namespace BookService.Web.Models
 {
@@ -14,11 +10,11 @@ namespace BookService.Web.Models
         // automatically whenever you change your model schema, please use data migrations.
         // For more information refer to the documentation:
         // http://msdn.microsoft.com/en-us/data/jj591621.aspx
-    
+
         public BookServiceWebContext() : base("name=BookServiceWebContext")
         {
         }
 
-        public System.Data.Entity.DbSet<BookService.Web.Models.Author> Authors { get; set; }
+        public DbSet<Author> Authors { get; set; }
     }
 }
