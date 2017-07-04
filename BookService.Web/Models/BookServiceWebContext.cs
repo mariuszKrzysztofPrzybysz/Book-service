@@ -1,4 +1,5 @@
 ﻿using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace BookService.Web.Models
 {
@@ -16,5 +17,14 @@ namespace BookService.Web.Models
         }
 
         public DbSet<Author> Authors { get; set; }
+
+        public DbSet<Book> Books { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+        }
     }
 }
