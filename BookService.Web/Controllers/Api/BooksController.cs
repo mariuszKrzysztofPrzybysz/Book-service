@@ -6,10 +6,12 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using BookService.Web.Models;
+using BookService.Web.Models.Dto;
 
 namespace BookService.Web.Controllers.Api
 {
@@ -18,16 +20,36 @@ namespace BookService.Web.Controllers.Api
         private BookServiceWebContext db = new BookServiceWebContext();
 
         // GET: api/Books
-        public IQueryable<Book> GetBooks()
+        public IQueryable<BookDto> GetBooks()
         {
-            return db.Books;
+            var books = db.Books
+                .Select(b => new BookDto
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    AuthorName = b.Author.Name
+                });
+
+            return books;
         }
 
         // GET: api/Books/5
         [ResponseType(typeof(Book))]
         public async Task<IHttpActionResult> GetBook(int id)
         {
-            Book book = await db.Books.FindAsync(id);
+            var book = await db.Books
+                .Include(b => b.Author)
+                .Select(b => new BookDetailDto
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Year = b.Year,
+                    Price = b.Price,
+                    AuthorName = b.Author.Name,
+                    Genre = b.Genre
+                })
+                .SingleOrDefaultAsync(b => b.Id == id);
+
             if (book == null)
             {
                 return NotFound();
@@ -83,7 +105,16 @@ namespace BookService.Web.Controllers.Api
             db.Books.Add(book);
             await db.SaveChangesAsync();
 
-            return CreatedAtRoute("DefaultApi", new { id = book.Id }, book);
+            await db.Entry(book).Reference(x => x.Author).LoadAsync();
+
+            var dto = new BookDto
+            {
+                Id = book.Id,
+                Title = book.Title,
+                AuthorName = book.Author.Name
+            };
+
+            return CreatedAtRoute("DefaultApi", new {id = book.Id}, dto);
         }
 
         // DELETE: api/Books/5
