@@ -1,6 +1,7 @@
 ﻿var ViewModel = function() {
     var self = this;
     self.books = ko.observableArray();
+    self.authors = ko.observableArray();
     self.detail = ko.observable();
     self.error = ko.observable();
 
@@ -27,11 +28,43 @@
 
     getAllBooks();
 
-    self.getBookDetail = function (item) {
-        ajaxHelper(booksUri + item.Id, "GET").done(function (data) {
+    self.getBookDetail = function(item) {
+        ajaxHelper(booksUri + item.Id, "GET").done(function(data) {
             self.detail(data);
         });
     }
+
+    self.newBook = {
+        Author: ko.observable(),
+        Genre: ko.observable(),
+        Price: ko.observable(),
+        Title: ko.observable(),
+        Year: ko.observable()
+    }
+
+    var authorsUri = "/api/authors/";
+
+    function getAuthors() {
+        ajaxHelper(authorsUri, "GET").done(function(data) {
+            self.authors(data);
+        });
+    }
+
+    self.addBook = function(formElement) {
+        var book = {
+            AuthorId: self.newBook.Author().Id,
+            Genre: self.newBook.Genre(),
+            Price: self.newBook.Price(),
+            Title: self.newBook.Title(),
+            Year: self.newBook.Year()
+        };
+
+        ajaxHelper(booksUri, "POST", book).done(function(item) {
+            self.books.push(item);
+        });
+    }
+
+    getAuthors();
 };
 
 ko.applyBindings(new ViewModel());
